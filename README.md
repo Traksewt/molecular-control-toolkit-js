@@ -10,7 +10,7 @@ This toolkit can be used to transfer Leap Motion events in the browser direct to
 in the browser JS:
 <code>
 
-	  var leapToolkit = new molecularControlToolkitJS.leap(gestures());
+	var leapToolkit = new molecularControlToolkitJS.leap(gestures());
 
 	var gestures = function () {
 	  var functions = ['triggerPan', 'triggerRotate', 'triggerZoom', 'point', 'reset', 'zoomToSelection', 'selectMouseCursor'];
