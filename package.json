@@ -1,0 +1,24 @@
+{
+  "name": "molecular-control-toolkit-js",
+  "version": "0.0.2",
+  "description": "A javascript adapter to the molecular control toolkit",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Traksewt/molecular-control-toolkit-js.git"
+  },
+  "keywords": [
+    "LeapMotion",
+    "Gesture",
+    "Device",
+    "MolecularControlToolkit"
+  ],
+  "author": "Kenny Sabir",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/Traksewt/molecular-control-toolkit-js/issues"
+  },
+  "dependencies": {
+    "leapjs": "*"
+  }
+}
