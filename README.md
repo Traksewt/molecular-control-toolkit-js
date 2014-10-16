@@ -9,6 +9,7 @@ This toolkit can be used to transfer Leap Motion events in the browser direct to
 
 in the browser JS:
 <code>
+
 	  var leapToolkit = new molecularControlToolkitJS.leap(gestures());
 
 	var gestures = function () {
@@ -31,6 +32,7 @@ in the browser JS:
 	
 in the applet:
 <code>
+
 TunnellingConnector connector = null;
 
 	public void initialise() {
