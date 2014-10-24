@@ -63,8 +63,8 @@ LeapConnector.prototype.onFrame = function(frame) {
         var hand = frame.hands[0];
         var translation = hand.translation(lastFrame);
         // comment out for the moment until JS Leap Motion rotation bugs are fixed.
-//        that.gestureDispatcher.triggerPan(translation[0], -translation[1]);
-//        that.gestureDispatcher.triggerZoom(-translation[2]);
+        that.gestureDispatcher.triggerPan(translation[0], -translation[1]);
+        that.gestureDispatcher.triggerZoom(-translation[2]);
         
         // yaw pitch roll are slightly better, but there still seems to be an issue.
 //        var xRotation = this.limitRotation(hand.pitch() - lastFrame.hands[0].pitch());
