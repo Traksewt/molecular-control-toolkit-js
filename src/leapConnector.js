@@ -14,7 +14,7 @@ var ROTATION_SCALE = 500;
 
 var MAX_ROTATION = 30;
 
-var MIN_ROTATION = 0.1;
+var MIN_ROTATION = 0.00001;
 
 var LeapConnector = function(gestureDispatcher) {
   this.gestureDispatcher = gestureDispatcher;
