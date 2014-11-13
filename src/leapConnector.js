@@ -10,7 +10,7 @@ var Y_SCALE = -400;
 /** constant for offsetting pointing in the y axis */
 var Y_OFFSET = 400;
 
-var ROTATION_SCALE = 500;
+var ROTATION_SCALE = 100;
 
 var MAX_ROTATION = 30;
 
