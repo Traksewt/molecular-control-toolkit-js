@@ -14,7 +14,7 @@ var ROTATION_SCALE = 500;
 
 var MAX_ROTATION = 30;
 
-var MIN_ROTATION = 3;
+var MIN_ROTATION = 0.1;
 
 var LeapConnector = function(gestureDispatcher) {
   this.gestureDispatcher = gestureDispatcher;
@@ -133,10 +133,8 @@ LeapConnector.prototype.onFrame = function(frame) {
         if (Math.abs(axisAngle[0][0]) > MIN_ROTATION || 
             Math.abs(axisAngle[0][1]) > MIN_ROTATION || 
             Math.abs(axisAngle[0][2]) > MIN_ROTATION) {
-          that.gestureDispatcher.triggerRotate((0),
-              -(axisAngle[0][1]), 0);
-//          that.gestureDispatcher.triggerRotate((axisAngle[0][0]),
-//              -(axisAngle[0][1]), (axisAngle[0][2]));
+          that.gestureDispatcher.triggerRotate((axisAngle[0][0]),
+              -(axisAngle[0][1]), (axisAngle[0][2]));
         }
       }
     } else if (frame.fingers.length > 0) {
