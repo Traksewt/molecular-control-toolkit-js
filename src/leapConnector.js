@@ -133,8 +133,8 @@ LeapConnector.prototype.onFrame = function(frame) {
         if (Math.abs(axisAngle[0][0]) > MIN_ROTATION || 
             Math.abs(axisAngle[0][1]) > MIN_ROTATION || 
             Math.abs(axisAngle[0][2]) > MIN_ROTATION) {
-          that.gestureDispatcher.triggerRotate((axisAngle[0][0]),
-              -(axisAngle[0][1]), (axisAngle[0][2]));
+          that.gestureDispatcher.triggerRotate(this.limitRotation(axisAngle[0][0]),
+              this.limitRotation(axisAngle[0][1]), this.limitRotation(axisAngle[0][2]));
         }
       }
     } else if (frame.fingers.length > 0) {
