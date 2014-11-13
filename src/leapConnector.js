@@ -49,12 +49,51 @@ LeapConnector.prototype.limitRotation = function(r) {
   return r;
 }
 
+// workaround for LeapJS bug
+// see http://jsfiddle.net/kLs8ymye/2/
+// https://github.com/leapmotion/leapjs/issues/188
+LeapConnector.prototype.axisAngle = function(rotation) {
+    //NOTE: Index = 3*row + col when basis vector 
+  var axis = [
+    rotation[5] - rotation[7],
+    rotation[6] - rotation[2],
+    rotation[1] - rotation[3]
+  ];
+  var sin = Leap.vec3.len(axis);
+  var cos = ((rotation[0] + rotation[4] + rotation[8]) - 1.0)*0.5;
+  var angle = Math.atan2(sin,cos);
+
+    if (-1e-6 < sin && sin < 1e-6) {
+        axis = [0, 0, 0];
+        angle = 0;
+        return [axis, angle];
+    }
+    
+    Leap.vec3.scale(axis, axis, 1 / sin);
+  return [axis,angle];
+}
+
+LeapConnector.prototype.getBasis = function (frame) {
+
+  var handLast = frame.hands[0];
+  var dir = handLast.direction;
+  var nor = handLast.palmNormal;
+  var dxn = Leap.vec3.create();
+  Leap.vec3.cross(dxn, dir, nor);
+  var basisLast = [].concat(dir).concat(nor);
+  basisLast[6] = dxn[0];
+  basisLast[7] = dxn[1];
+  basisLast[8] = dxn[2];
+  
+  return basisLast;
+}
+
 LeapConnector.prototype.onFrame = function(frame) {
   var that = this;
   if (frame.hands.length == 1) {
     if (frame.fingers.length > 3) {
       var lastFrame = this.controller.frame(1);
-      if (lastFrame && lastFrame.hands.length == 1) {
+      if (lastFrame && lastFrame.hands.length > 0) {
         
         // rotate
         that.lastY = -1;
@@ -66,6 +105,20 @@ LeapConnector.prototype.onFrame = function(frame) {
         that.gestureDispatcher.triggerPan(translation[0], -translation[1]);
         that.gestureDispatcher.triggerZoom(-translation[2]);
         
+        var basis = that.getBasis(frame); 
+        var basisLast = that.getBasis(lastFrame); 
+        
+        Leap.mat3.transpose(basisLast, basisLast);
+        var rotation = Leap.mat3.create();
+        Leap.mat3.multiply(rotation, basis, basisLast) 
+
+        //Get axis-angle representation
+        var axisAngle = that.axisAngle(rotation);
+                      
+        Leap.vec3.scale(axisAngle[0], axisAngle[0], axisAngle[1]);
+        
+        
+        
         // yaw pitch roll are slightly better, but there still seems to be an issue.
 //        var xRotation = this.limitRotation(hand.pitch() - lastFrame.hands[0].pitch());
 //        var yRotation = this.limitRotation(hand.yaw() - lastFrame.hands[0].yaw());
@@ -73,15 +126,17 @@ LeapConnector.prototype.onFrame = function(frame) {
         
         // these rotations have an issue where changes aren't updated properly.
         // see https://github.com/leapmotion/leapjs/issues/188
-        var xRotation = this.limitRotation(hand.rotationAngle(lastFrame, [ 1, 0, 0 ]));
-        var yRotation = this.limitRotation(hand.rotationAngle(lastFrame, [ 0, 1, 0 ]));
-        var zRotation = this.limitRotation(hand.rotationAngle(lastFrame, [ 0, 0, 1 ]));
+//        var xRotation = this.limitRotation(hand.rotationAngle(lastFrame, [ 1, 0, 0 ]));
+//        var yRotation = this.limitRotation(hand.rotationAngle(lastFrame, [ 0, 1, 0 ]));
+//        var zRotation = this.limitRotation(hand.rotationAngle(lastFrame, [ 0, 0, 1 ]));
         // console.log('lastframe1: ' + that.lastFrame);
-        if (Math.abs(xRotation) > MIN_ROTATION || 
-            Math.abs(yRotation) > MIN_ROTATION || 
-            Math.abs(zRotation) > MIN_ROTATION) {
-          that.gestureDispatcher.triggerRotate((xRotation),
-              -(yRotation), (zRotation));
+        if (Math.abs(axisAngle[0][0]) > MIN_ROTATION || 
+            Math.abs(axisAngle[0][1]) > MIN_ROTATION || 
+            Math.abs(axisAngle[0][2]) > MIN_ROTATION) {
+          that.gestureDispatcher.triggerRotate((0),
+              -(axisAngle[0][1]), 0);
+//          that.gestureDispatcher.triggerRotate((axisAngle[0][0]),
+//              -(axisAngle[0][1]), (axisAngle[0][2]));
         }
       }
     } else if (frame.fingers.length > 0) {
